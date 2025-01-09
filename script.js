@@ -1,9 +1,5 @@
-/*******************************************
- * EJEMPLO de Estructura con 5 preguntas
- * por categoría y dificultad (en total 45).
- * Debajo de este ejemplo, se incluye un link
- * con el bloque de 20 preguntas por bloque.
- ********************************************/
+* 1. AQUÍ VA TODO EL OBJETO questionsData */
+
 const questionsData = {
   SQL: {
     Baja: [
@@ -444,4 +440,220 @@ const questionsData = {
       }
     ]
   }
+
+
 };
+
+/* 2. AQUÍ VA TODA LA LÓGICA DEL JUEGO */
+// Variables globales
+/************************************************
+ * script.js (versión con preguntas y validación)
+ ************************************************/
+
+// En un proyecto real, aquí pegarías el objeto questionsData
+// con las 20 preguntas por categoría y dificultad.
+// (Para la demo, tomaremos el ejemplo de 5 preguntas)
+////////////////// PEGAR AQUÍ EL OBJETO questionsData //////////////////
+
+
+// Variables principales del juego
+let currentPlayer = 'X';
+let boardState = Array(9).fill(null);
+let gameActive = false;
+
+// Para almacenar la categoría y dificultad elegidas
+let selectedCategory = 'SQL';
+let selectedDifficulty = 'Baja';
+
+// Para la gestión de preguntas
+let currentQuestion = null;   // Objeto de la pregunta actual
+let selectedAnswer = null;    // Índice de la respuesta elegida
+let skipCardAvailable = false; // Carta skip
+
+// Elementos del DOM
+const startBtn = document.getElementById('startBtn');
+const gameSetupSection = document.getElementById('game-setup');
+const gameBoardSection = document.getElementById('game-board');
+const cells = document.querySelectorAll('.cell');
+const statusText = document.getElementById('status');
+const questionContainer = document.getElementById('question-container');
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const confirmBtn = document.getElementById('confirmBtn');
+const useSkipBtn = document.getElementById('useSkipBtn');
+
+// Elementos de selección de categoría, dificultad y equipo
+const categorySelect = document.getElementById('categorySelect');
+const difficultySelect = document.getElementById('difficultySelect');
+const teamSelect = document.getElementById('teamSelect');
+
+// Eventos iniciales
+startBtn.addEventListener('click', startGame);
+confirmBtn.addEventListener('click', confirmAnswer);
+useSkipBtn.addEventListener('click', handleSkipCard);
+
+function startGame() {
+  // Obtenemos los valores de categoría, dificultad y equipo
+  selectedCategory = categorySelect.value;
+  selectedDifficulty = difficultySelect.value;
+  currentPlayer = teamSelect.value; // "X" o "O"
+
+  // Ocultar configuración y mostrar tablero
+  gameSetupSection.classList.add('hidden');
+  gameBoardSection.classList.remove('hidden');
+
+  // Inicializar estado del juego
+  gameActive = true;
+  boardState.fill(null);
+  skipCardAvailable = true; // Demo: asumimos que tenemos la carta skip
+  useSkipBtn.disabled = !skipCardAvailable;
+
+  // Limpiar celdas
+  cells.forEach((cell) => {
+    cell.innerText = '';
+    cell.classList.remove('winner');
+    cell.addEventListener('click', handleCellClick);
+  });
+
+  updateStatus(`Turno del jugador: ${currentPlayer}`);
+}
+
+function handleCellClick(e) {
+  const cellIndex = e.target.getAttribute('data-index');
+
+  // Si la celda ya está ocupada o el juego no está activo, no hacemos nada
+  if (boardState[cellIndex] || !gameActive) return;
+
+  // Antes de colocar ficha, mostramos pregunta:
+  // - Cargamos una pregunta aleatoria de la categoría/dificultad.
+  displayRandomQuestion(selectedCategory, selectedDifficulty, cellIndex);
+}
+
+function displayRandomQuestion(category, difficulty, cellIndex) {
+  // Obtenemos el array de preguntas según la categoría y dificultad
+  const questionsArray = questionsData[category][difficulty];
+  // Escogemos una pregunta aleatoria
+  const randomIndex = Math.floor(Math.random() * questionsArray.length);
+  currentQuestion = questionsArray[randomIndex];
+  selectedAnswer = null; // Reseteamos la respuesta seleccionada
+
+  // Mostramos la pregunta en el DOM
+  questionText.innerText = currentQuestion.question;
+
+  // Limpiamos opciones previas
+  optionsContainer.innerHTML = '';
+  currentQuestion.options.forEach((option, index) => {
+    const optionDiv = document.createElement('div');
+    optionDiv.classList.add('option');
+
+    const optionInput = document.createElement('input');
+    optionInput.type = 'radio';
+    optionInput.name = 'answer';
+    optionInput.value = index;
+    optionInput.id = `opt-${index}`;
+
+    optionInput.addEventListener('change', () => {
+      selectedAnswer = parseInt(optionInput.value);
+    });
+
+    const optionLabel = document.createElement('label');
+    optionLabel.htmlFor = `opt-${index}`;
+    optionLabel.innerText = option;
+
+    optionDiv.appendChild(optionInput);
+    optionDiv.appendChild(optionLabel);
+    optionsContainer.appendChild(optionDiv);
+  });
+
+  // Mostramos el contenedor de preguntas
+  questionContainer.classList.remove('hidden');
+
+  // Guardamos el cellIndex donde se pretende jugar
+  // para usarlo tras confirmar la respuesta
+  confirmBtn.setAttribute('data-cell-index', cellIndex);
+}
+
+function confirmAnswer() {
+  if (selectedAnswer === null) {
+    alert('Por favor, selecciona una respuesta.');
+    return;
+  }
+
+  // Verificamos si la respuesta es correcta
+  if (selectedAnswer === currentQuestion.correct) {
+    // Respuesta correcta
+    const cellIndex = confirmBtn.getAttribute('data-cell-index');
+    placeMark(cellIndex);
+    questionContainer.classList.add('hidden');
+  } else {
+    // Respuesta incorrecta
+    alert('Respuesta incorrecta. Pierdes el turno.');
+    questionContainer.classList.add('hidden');
+    switchTurn();
+  }
+}
+
+function placeMark(cellIndex) {
+  // Colocar la marca en el tablero
+  boardState[cellIndex] = currentPlayer;
+  cells[cellIndex].innerText = currentPlayer;
+
+  // Revisar si hay 3 en línea
+  if (checkWin(currentPlayer)) {
+    endGame(`¡Jugador ${currentPlayer} gana la ronda!`);
+  } else if (boardState.every((cell) => cell !== null)) {
+    endGame('La ronda terminó en empate.');
+  } else {
+    // Si no hay victoria, pasamos turno
+    switchTurn();
+  }
+}
+
+function switchTurn() {
+  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+  updateStatus(`Turno del jugador: ${currentPlayer}`);
+}
+
+function updateStatus(msg) {
+  statusText.innerText = msg;
+}
+
+function checkWin(player) {
+  const winningCombinations = [
+    [0,1,2], [3,4,5], [6,7,8], // filas
+    [0,3,6], [1,4,7], [2,5,8], // columnas
+    [0,4,8], [2,4,6]           // diagonales
+  ];
+
+  for (let combo of winningCombinations) {
+    const [a, b, c] = combo;
+    if (
+      boardState[a] === player &&
+      boardState[b] === player &&
+      boardState[c] === player
+    ) {
+      // Marcar celdas ganadoras (opcional)
+      cells[a].classList.add('winner');
+      cells[b].classList.add('winner');
+      cells[c].classList.add('winner');
+      return true;
+    }
+  }
+  return false;
+}
+
+function endGame(message) {
+  gameActive = false;
+  updateStatus(message);
+}
+
+function handleSkipCard() {
+  if (!skipCardAvailable || !gameActive) return;
+  // Carta Skip: salta el turno del oponente
+  switchTurn(); // Salta al oponente
+  switchTurn(); // Vuelve al jugador actual
+
+  skipCardAvailable = false;
+  useSkipBtn.disabled = true;
+  updateStatus(`¡Usaste Carta Skip! Sigue jugando el jugador: ${currentPlayer}`);
+}
