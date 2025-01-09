@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de Tres en Línea - Demo</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <h1>Juego de Tres en Línea (Demo)</h1>
+
+  <!-- Sección de información previa: selección de categoría y dificultad -->
+  <section id="game-setup">
+    <h2>Previa del Juego</h2>
+    <p>1. Selecciona la categoría y dificultad</p>
+    <div>
+      <label for="categorySelect">Categoría:</label>
+      <select id="categorySelect">
+        <option value="SQL">SQL</option>
+        <option value="PowerBI">Power BI</option>
+        <option value="AD">Análisis de Datos</option>
+      </select>
+    </div>
+    <div>
+      <label for="difficultySelect">Dificultad:</label>
+      <select id="difficultySelect">
+        <option value="Baja">Baja</option>
+        <option value="Media">Media</option>
+        <option value="Alta">Alta</option>
+      </select>
+    </div>
+
+    <p>2. Selecciona tu equipo o locación (ejemplo “Solara”, “Frystvaal”)</p>
+    <div>
+      <label for="teamSelect">Equipo:</label>
+      <select id="teamSelect">
+        <option value="X">Team Calor (X)</option>
+        <option value="O">Team Frío (O)</option>
+      </select>
+    </div>
+
+    <button id="startBtn">Iniciar Juego</button>
+  </section>
+
+  <!-- Tablero de 3x3 para la demo -->
+  <section id="game-board" class="hidden">
+    <h2>Ronda en Curso</h2>
+    <div class="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <div id="status"></div>
+
+    <!-- Sección para mostrar la pregunta y opciones -->
+    <div id="question-container" class="hidden">
+      <p id="question-text"></p>
+      <div id="options-container"></div>
+      <button id="confirmBtn">Confirmar Respuesta</button>
+    </div>
+    
+    <!-- Botón para usar la carta skip (demo) -->
+    <div id="bonus-cards">
+      <button id="useSkipBtn" disabled>Usar Carta Skip</button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

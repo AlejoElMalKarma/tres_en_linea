@@ -1,0 +1,91 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background: #f4f4f4;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+#game-setup, #game-board {
+  margin: 0 auto;
+  max-width: 600px;
+  background: white;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.hidden {
+  display: none;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(3, 80px);
+  gap: 5px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  transition: background 0.3s;
+}
+
+.cell:hover {
+  background: #ccc;
+}
+
+#status {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#question-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 15px 0;
+}
+
+#options-container {
+  margin: 10px 0;
+}
+
+.option {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.option input {
+  margin-right: 8px;
+}
+
+#winner {
+  color: green;
+  font-weight: bold;
+}
+
+#bonus-cards {
+  text-align: center;
+  margin-top: 10px;
+}
+
+button {
+  cursor: pointer;
+  padding: 10px;
+  margin: 5px;
+  font-size: 1rem;
+}
