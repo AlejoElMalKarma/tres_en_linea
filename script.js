@@ -1,4 +1,4 @@
-* 1. AQUÍ VA TODO EL OBJETO questionsData */
+
 
 const questionsData = {
   SQL: {
@@ -444,7 +444,7 @@ const questionsData = {
 
 };
 
-/* 2. AQUÍ VA TODA LA LÓGICA DEL JUEGO */
+
 // Variables globales
 /************************************************
  * script.js (versión con preguntas y validación)
